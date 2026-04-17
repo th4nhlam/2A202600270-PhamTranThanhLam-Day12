@@ -1,0 +1,47 @@
+name: API Gateway CI/CD
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - "04-api-gateway/**"
+      - ".github/workflows/api-gateway.yml"
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - "04-api-gateway/**"
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+
+    - name: 📦 Install dependencies
+      working-directory: ./04-api-gateway/production
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: 🧹 Linting (Flake8)
+      working-directory: ./04-api-gateway/production
+      run: |
+        # Dừng build nếu lỗi Python syntax (mất ngoặc, gọi biến chưa khai báo...)
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Cảnh báo các lỗi convention khác (không dừng build)
+        flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
+
+    - name: 🚀 Test Server Startup (Dry Run)
+      working-directory: ./04-api-gateway/production
+      run: |
+        # Thử khởi động Uvicorn. Nếu server sống sót qua 5 giây (bị lệnh timeout ngắt - exit 124) thì xem như chạy thành công!
+        timeout 5 uvicorn app:app --host 0.0.0.0 --port 8000 || [ $? -eq 124 ] && echo "✅ Server khởi động ổn định không bị Crash!"
