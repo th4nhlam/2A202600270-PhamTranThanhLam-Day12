@@ -57,6 +57,6 @@ production-cloud-run/
 
 ## Câu hỏi thảo luận
 
-1. Tại sao serverless (Lambda) không phải lúc nào cũng tốt cho AI agent?
-2. "Cold start" là gì? Ảnh hưởng thế nào đến UX?
-3. Khi nào nên upgrade từ Railway lên Cloud Run?
+1. Tại sao serverless (Lambda) không phải lúc nào cũng tốt cho AI agent? Vì AI agent cần nhiều tài nguyên và thời gian để xử lý, serverless không đáp ứng được yêu cầu này
+2. "Cold start" là gì? Ảnh hưởng thế nào đến UX? "Cold start" là thời gian khởi động container, ảnh hưởng đến UX vì người dùng phải chờ đợi lâu hơn
+3. Khi nào nên upgrade từ Railway lên Cloud Run? Khi cần nhiều tài nguyên hơn, cần nhiều tính năng hơn, cần nhiều tính năng hơn

@@ -1,0 +1,3 @@
+WARNING:  You must pass the application as an import string to enable 'reload' or 'workers'.
+API Key: my-secret-key
+Test: curl -H 'X-API-Key: my-secret-key' http://localhost:8000/ask?question=hello

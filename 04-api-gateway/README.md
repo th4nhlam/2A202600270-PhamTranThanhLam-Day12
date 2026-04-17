@@ -86,6 +86,6 @@ Request
 
 ## Câu hỏi thảo luận
 
-1. Khi nào nên dùng API Key vs JWT vs OAuth2?
-2. Rate limit nên đặt bao nhiêu request/phút cho một AI agent?
-3. Nếu API key bị lộ, bạn phát hiện và xử lý như thế nào?
+1. Khi nào nên dùng API Key vs JWT vs OAuth2? API key: Giao tiếp giữa 2 hệ thống. JWT: Giao tiếp giữa client và server. OAuth2: Giao tiếp giữa 2 hệ thống với quyền truy cập của bên thứ 3.
+2. Rate limit nên đặt bao nhiêu request/phút cho một AI agent? 10 request/phút cho một AI agent.
+3. Nếu API key bị lộ, bạn phát hiện và xử lý như thế nào?  Revoke API key và tạo mới.

@@ -98,6 +98,6 @@ COPY --from=builder ...        # copy chỉ /site-packages
 
 ## Câu hỏi thảo luận
 
-1. Tại sao `COPY requirements.txt .` rồi `RUN pip install` TRƯỚC khi `COPY . .`?
-2. `.dockerignore` nên chứa những gì? Tại sao `venv/` và `.env` quan trọng?
-3. Nếu agent cần đọc file từ disk, làm sao mount volume vào container?
+1. Tại sao `COPY requirements.txt .` rồi `RUN pip install` TRƯỚC khi `COPY . .`? Để tận dụng Docker layer cache, nếu không thay đổi requirements.txt thì không cần cài lại dependencies
+2. `.dockerignore` nên chứa những gì? Tại sao `venv/` và `.env` quan trọng? Để loại bỏ các file không cần thiết khỏi image, giúp giảm kích thước image và tăng bảo mật
+3. Nếu agent cần đọc file từ disk, làm sao mount volume vào container? Dùng lệnh `docker run -v /path/to/host:/path/to/container ...`

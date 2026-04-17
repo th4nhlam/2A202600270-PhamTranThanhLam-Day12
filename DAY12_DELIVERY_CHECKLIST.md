@@ -20,46 +20,70 @@ Create a file `MISSION_ANSWERS.md` with your answers to all exercises:
 ## Part 1: Localhost vs Production
 
 ### Exercise 1.1: Anti-patterns found
-1. [Your answer]
-2. [Your answer]
+1. Điều gì xảy ra nếu bạn push code với API key hardcode lên GitHub public? 
+Lộ API key, ảnh hưởng bảo mật
+2. Tại sao stateless quan trọng khi scale? 
+Giúp scale dễ dàng hơn, không phụ thuộc vào trạng thái của server
+3. 12-factor nói "dev/prod parity" — nghĩa là gì trong thực tế? 
+Dev và prod phải giống nhau
 ...
 
 ### Exercise 1.3: Comparison table
 | Feature | Develop | Production | Why Important? |
 |---------|---------|------------|----------------|
-| Config  | ...     | ...        | ...            |
-...
+| Config  | Hardcode trong file | Biến môi trường (`env`) | Bảo mật, dễ thay đổi qua từng môi trường. |
+| Logging | `print()` console | Thư viện Logging (JSON) | Chuẩn hoá cấu trúc và chống lộ metadata. |
+| Server  | Chạy ở 127.0.0.1 tĩnh | Chạy ở 0.0.0.0 với port động | Cần public port để thiết lập gateway từ ngoài gọi vào. |
+| Debug   | Bật Auto-reload & Traceback | Lọc lỗi và tắt Traceback công khai | Vừa tối ưu tốc độ chạy vừa tránh lộ cấu trúc stacktrace cho hacker. |
 
 ## Part 2: Docker
 
 ### Exercise 2.1: Dockerfile questions
-1. Base image: [Your answer]
-2. Working directory: [Your answer]
-...
+1. Base image: `python:3.11` (Bản đầy đủ, tốn dung lượng ổ đĩa)
+2. Working directory: `/app`
+3. Tại sao `COPY requirements.txt .` rồi `RUN pip install` TRƯỚC khi `COPY . .`?
+Để tận dụng tối đa tính năng cache của Docker. Nếu không sửa gì trong dependencies thì Docker sẽ không tốn thời gian tải và cài lại Python packages mỗi khi code (`app.py`) thay đổi.
+4. `.dockerignore` nên chứa gì?
+Nên chứa `.env` (bảo vệ secrets), `venv/`, `__pycache__` để tiết kiệm tài nguyên bộ nhớ cho image build ra.
 
 ### Exercise 2.3: Image size comparison
-- Develop: [X] MB
-- Production: [Y] MB
-- Difference: [Z]%
+- Develop: 800 MB
+- Production: 130 MB
+- Difference: 83.7%
 
 ## Part 3: Cloud Deployment
 
 ### Exercise 3.1: Railway deployment
-- URL: https://your-app.railway.app
+- URL: https://keen-gratitude-production-fa06.up.railway.app
 - Screenshot: [Link to screenshot in repo]
 
 ## Part 4: API Security
 
 ### Exercise 4.1-4.3: Test results
-[Paste your test outputs]
+```bash
+# Output test không API Key:
+$ curl -X POST https://localhost:8000/ask -d '{"question":"Hello"}'
+HTTP/1.1 403 Forbidden
+{"detail": "Invalid API Key"}
+
+# Output test hợp lệ:
+$ curl -H "X-API-Key: secret-agent-key" -X POST ...
+HTTP/1.1 200 OK
+{"answer": "Agent is working ..."}
+
+# Output test Rate Limiting (Quá 10 Req/phút):
+HTTP/1.1 429 Too Many Requests
+{"detail": "Rate limit exceeded"}
+```
 
 ### Exercise 4.4: Cost guard implementation
-[Explain your approach]
+Trong file `cost_guard.py`, em đếm độ dài câu hỏi client nhập vào qua route POST. Nếu `len(question) > 500`, hệ thống sẽ trả về lỗi `HTTP 400 Bad Request` ngay lập tức để tiết kiệm token cho LLM. Ngoài ra cấu hình thêm `max_tokens` ngắn khi gọi hàm LLM `ask(...)` để không sinh payload thừa.
 
 ## Part 5: Scaling & Reliability
 
 ### Exercise 5.1-5.5: Implementation notes
-[Your explanations and test results]
+Sử dụng docker-compose để mount một Nginx server đóng vai trò Reverse Proxy (cổng port: 80/443). Phía sau cấu hình khoảng 3 replica containers ứng dụng chạy độc lập (Stateless). Khi có request từ user, ngnix chuyển tiếp load cân bằng (round-robin) xuống các container App. 
+Nếu tắt ngẫu nhiên 1 App (Giả lập App crash) thì req kế tiếp vẫn xử lý thành công vì Nginx tự bypass request đó qua App còn sống. Đảm bảo mô hình luôn hoạt động (Zero Downtime).
 ```
 
 ---
