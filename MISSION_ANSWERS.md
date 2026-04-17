@@ -41,7 +41,7 @@ Dev và prod phải giống nhau
 
 ### Exercise 3.1: Railway deployment
 - URL: https://keen-gratitude-production-fa06.up.railway.app
-- Screenshot: 
+- Screenshot: ![Result screen](./Lab3_Screenshot.png)
 
 ## Part 4: API Security
 
